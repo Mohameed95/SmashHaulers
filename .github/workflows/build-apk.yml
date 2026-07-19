@@ -1,20 +1,33 @@
-Smash Haulers: original Android physics launcher game with CI APK build
+name: Build APK
 
-Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
-[core]
-	repositoryformatversion = 0
-	filemode = false
-	bare = false
-	logallrefupdates = true
-	ignorecase = true
-[user]
-	name = Smash Haulers Dev
-	email = dev@smashhaulers.local
-[remote "origin"]
-	url = https://github.com/YOUR-USERNAME/SmashHaulers.git
-	fetch = +refs/heads/*:refs/remotes/origin/*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-Unnamed repository; edit this file 'description' to name the repository.
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-ref: refs/heads/main
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.7'
+
+      - name: Build debug APK
+        run: gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmashHaulers-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
